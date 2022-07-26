@@ -1,0 +1,14 @@
+{
+  "name": "raindrop-to-wp",
+  "version": "1.0.0",
+  "description": "Example of creating a function that runs as a cron job using the serverless `schedule` event",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "wpcom": "^5.4.2"
+  },
+  "devDependencies": {
+    "serverless-local-schedule": "^0.1.7"
+  }
+}

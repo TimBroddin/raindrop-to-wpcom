@@ -1,0 +1,21 @@
+service: raindrop-to-wp
+
+frameworkVersion: "3"
+
+provider:
+    name: aws
+    runtime: nodejs14.x
+    profile: timbroddin
+    region: eu-west-1
+    environment:
+        raindropToken: ${file(./config.json):raindropToken}
+        raindropCollection: ${file(./config.json):raindropCollection}
+        wpToken: ${file(./config.json):wpToken}
+        wpSite: ${file(./config.json):wpSite}
+
+functions:
+    cronHandler:
+        handler: handler.run
+        events:
+            - schedule:
+                  rate: cron(0 8 ? * TUE *)
