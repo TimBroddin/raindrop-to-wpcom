@@ -28,9 +28,11 @@ module.exports.run = async (event, context) => {
     const { items } = await raindropsApi.call(
         `/rest/v1/raindrops/${process.env.raindropCollection}?sort=-created`
     );
-    const lastWeek = items.filter(
-        (item) => new Date(item.created) > time.setDate(time.getDate() - 7)
-    );
+    const lastWeek = items.filter((item) => {
+        const time = new Date();
+        time.setDate(time.getDate() - 7);
+        return new Date(item.created).getTime() > time.getTime();
+    });
 
     // get all tags from lastWeek items
     const tags = lastWeek.reduce((acc, item) => {
@@ -64,8 +66,8 @@ module.exports.run = async (event, context) => {
         await wpcom.site(process.env.wpSite).addPost({
             title: `Weekly linkdump (week ${weekNumber})`,
             content,
-            status: "draft",
-            categories: "English",
+            status: "publish",
+            categories: "English, Linkdump",
             excerpt: "My weekly linkdump.",
             tags,
         });
