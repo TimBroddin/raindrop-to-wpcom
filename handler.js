@@ -22,6 +22,14 @@ const getWeekNumber = () => {
 };
 
 module.exports.run = async (event, context) => {
+    const categories = [
+        { slug: "coding", name: "Coding" },
+        { slug: "tech", name: "Tech" },
+        { slug: "gaming", name: "Gaming" },
+        { slug: "music", name: "Music" },
+        { slug: "funny", name: "Funny" },
+    ];
+
     const time = new Date();
     const raindropsApi = new Raindrops(process.env.raindropToken);
 
@@ -48,20 +56,64 @@ module.exports.run = async (event, context) => {
     }, []);
 
     if (lastWeek.length) {
-        const content = `${lastWeek
+        const groupedByCategory = [];
+        categories.forEach((category) => {
+            lastWeek.forEach((item) => {
+                if (item.tags.includes(category.slug)) {
+                    if (
+                        groupedByCategory.find(
+                            (group) => group.category === category.name
+                        )
+                    ) {
+                        groupedByCategory
+                            .find((group) => group.category === category.name)
+                            .items.push(item);
+                    } else {
+                        groupedByCategory.push({
+                            category: category.name,
+                            items: [item],
+                        });
+                    }
+                }
+            });
+        });
+
+        const others = lastWeek.filter((item) => {
+            return !item.tags.some((tag) =>
+                categories.filter((c) => c.slug === tag)
+            );
+        });
+
+        if (others) {
+            groupedByCategory.push({
+                category: "Misc",
+                items: others,
+            });
+        }
+
+        const content = `${groupedByCategory
             .map(
-                (item) =>
-                    `<p><a href="${
-                        item.link
-                    }" target="_blank" rel="noopener noreferrer">${
-                        item.title
-                    }</a>${
-                        item.excerpt
-                            ? `<br />${trim(removeHtml(item.excerpt), 140)}`
-                            : ""
-                    }</p>\n\n`
+                (category) =>
+                    `<h2>${category.category}</h2>\n${category.items
+                        .map(
+                            (item) =>
+                                `<p><a href="${
+                                    item.link
+                                }" target="_blank" rel="noopener noreferrer">${
+                                    item.title
+                                }</a>${
+                                    item.excerpt
+                                        ? `<br />${trim(
+                                              removeHtml(item.excerpt),
+                                              140
+                                          )}`
+                                        : ""
+                                }</p>\n\n`
+                        )
+                        .join("\n\n")}`
             )
             .join("")}`;
+
         const weekNumber = getWeekNumber();
         await wpcom.site(process.env.wpSite).addPost({
             title: `Weekly linkdump (week ${weekNumber})`,
