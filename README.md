@@ -1,6 +1,6 @@
 # Raindrop.io to WordPress.com
 
-A simple Serverless function to post my weekly bookmarks from Raindrop.io to my Wordpress.com
+A simple Serverless function to post my weekly bookmarks from Raindrop.io to my Wordpress.com blog.
 
 ## Installation
 
