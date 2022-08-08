@@ -115,14 +115,19 @@ module.exports.run = async (event, context) => {
             .join("")}`;
 
         const weekNumber = getWeekNumber();
-        await wpcom.site(process.env.wpSite).addPost({
+        const post = {
             title: `Weekly linkdump (week ${weekNumber})`,
             content,
             status: "publish",
             categories: "English, Linkdump",
             excerpt: "My weekly linkdump.",
             tags,
-        });
+        };
+        if (process.env.PREVIEW) {
+            console.log(post);
+        } else {
+            await wpcom.site(process.env.wpSite).addPost(post);
+        }
     }
     console.log(`Your cron function "${context.functionName}" ran at ${time}`);
 };
