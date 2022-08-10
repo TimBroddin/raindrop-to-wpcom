@@ -27,6 +27,7 @@ module.exports.run = async (event, context) => {
         { slug: "tech", name: "Tech" },
         { slug: "gaming", name: "Gaming" },
         { slug: "music", name: "Music" },
+        { slug: "make", name: "Make" },
         { slug: "funny", name: "Funny" },
     ];
 
