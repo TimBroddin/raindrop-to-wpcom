@@ -21,10 +21,19 @@ const getWeekNumber = () => {
     return result;
 };
 
+const isVideo = ({ link }) => {
+    const videoDomains = ["youtube.com", "vimeo.com"];
+
+    if (videoDomains.some((domain) => link.indexOf(domain) !== -1)) {
+        return true;
+    }
+};
+
 module.exports.run = async (event, context) => {
     const categories = [
         { slug: "coding", name: "Coding" },
         { slug: "tech", name: "Tech" },
+        { slug: "handy", name: "Tips & Tricks" },
         { slug: "gaming", name: "Gaming" },
         { slug: "music", name: "Music" },
         { slug: "make", name: "Make" },
@@ -101,8 +110,8 @@ module.exports.run = async (event, context) => {
                                 `<p><a href="${
                                     item.link
                                 }" target="_blank" rel="noopener noreferrer">${
-                                    item.title
-                                }</a>${
+                                    isVideo(item) ? "▶️ " : ""
+                                }${item.title}</a>${
                                     item.excerpt
                                         ? `<br />${trim(
                                               removeHtml(item.excerpt),
@@ -119,10 +128,10 @@ module.exports.run = async (event, context) => {
         const post = {
             title: `Weekly linkdump (week ${weekNumber})`,
             content,
-            status: "publish",
+            status: "draft",
             categories: "English, Linkdump",
             excerpt: "My weekly linkdump.",
-            tags,
+            tags: ["linkdump"],
         };
         if (process.env.PREVIEW) {
             console.log(post);
